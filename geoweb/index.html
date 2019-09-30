@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+	
+	<head>
+		<meta charset="utf-8"/>
+		<title>Propuesta de Geoserver</title>
+	
+		<!--Leaflet-->
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+		crossorigin=""/>
+  
+		<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"
+		integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og=="
+		crossorigin="">
+  
+		</script>
+		
+		<!--Plugins de Leaflet-->
+		<!--MiniMap-->
+		<link rel="stylesheet" href="Control.MiniMap.css" />
+		<script src="Control.MiniMap.js" type= "text/javascript">
+		</script>
+	
+		<!--Mouse Position-->
+		<link rel="stylesheet" href="L.Control.MousePosition.css" />
+		<script src="L.Control.MousePosition.js" type= "text/javascript">
+		</script>
+		
+		<!--Full screen-->
+		<link rel='stylesheet' href='leaflet.fullscreen.css'  />
+		<script src='Leaflet.fullscreen.js'></script>
+		
+		<!--Map center-->
+		<link rel="stylesheet" href="leaflet.viewcenter.css" />
+		<script src="leaflet.viewcenter.js"></script>
+		
+		<!--Map ESRI-->
+		<script src="https://unpkg.com/esri-leaflet@2.3.0/dist/esri-leaflet.js"
+		integrity="sha512-1tScwpjXwwnm6tTva0l0/ZgM3rYNbdyMj5q6RSQMbNX6EUMhYDE3pMRGZaT41zHEvLoWEK7qFEJmZDOoDMU7/Q=="
+		crossorigin=""></script>
+
+		<!--Agregando capas locales-->
+		<script type="text/javascript" src="Honduras.js"></script>
+		<script type="text/javascript" src="0813AHOjojona.js"></script>
+		<script type="text/javascript" src="0813AldeasOjojona.js"></script>
+		<script type="text/javascript" src="0813Campos.js"></script>
+		<script type="text/javascript" src="0813CatastroOjojona.js"></script>
+		<script type="text/javascript" src="0813CentroSaludOjojona.js"></script>
+		<script type="text/javascript" src="0813Curvas100.js"></script>
+		<script type="text/javascript" src="0813EcoSistemas.js"></script>
+		<script type="text/javascript" src="0813GeoOjojona.js"></script>
+		<script type="text/javascript" src="0813LimitesOjojona.js"></script>
+		<script type="text/javascript" src="0813RiosOjojona.js"></script>
+		<script type="text/javascript" src="0813ZonasDesAgrop.js"></script>
+		
+		<!--Norte-->
+		<link rel="stylesheet" href="dist/L.Control.Rose.css" />
+		<script src="dist/L.Control.Rose.js"></script>
+
+		<!--Control de coordenada-->
+		<link rel="stylesheet" href="cc/Control.Coordinates.css">
+		<script src="cc/Control.Coordinates.js"></script>
+		
+		<!--Marcadores-->
+		<!--DataVisualizationMarkers-->
+		<link rel="stylesheet" href="dvf.css" /> 
+		<script src="leaflet-dvf.js"></script> 
+		<script src="leaflet-dvf.markers.js"></script>
+		
+		<!--MakiMarkers-->
+		<script src="Leaflet.MakiMarkers.js"></script>
+		
+		<!--Otros marcadores que no logre -->
+		<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
+		<link rel="stylesheet" href="leaflet.awesome-markers.css">
+		<script src="leaflet.awesome-markers.js"></script>
+		
+		<link rel="stylesheet" href="L.Control.Zoomslider.css" />
+		<script src="L.Control.Zoomslider.js" type="text/javascript"></script>
+	
+		<link href="L.Control.Zoomslider.css" rel="stylesheet" />
+		<script src="L.Control.Zoomslider.js"></script>
+		<script src="https://harrywood.co.uk/maps/examples/leaflet/leaflet-plugins/layer/vector/KML.js"></script>
+		
+		
+		<style>
+					
+					#map {
+					width: 100%;
+					height: 600px;
+					box-shadow: 5px 5px 5px #888;
+					}
+					.info {
+					padding: 6px 8px;
+					font: 14px/16px Arial, Helvetica, sans-serif;
+					background: white;
+					background: rgba(255,255,255,0.8);
+					box-shadow: 0 0 15px rgba(0,0,0,0.2);
+					border-radius: 5px;
+					}
+					.info h2 {
+					margin: 0 0 5px;
+					color: #777;
+					}
+					.legend {
+					line-height: 18px;
+					color: #555;
+					}
+				
+					.legend I {
+					width: 18px;
+					height: 18px;
+					float: left;
+					margin-right: 8px;
+					opacity: 0.7;
+					}
+					
+		</style>
+		
+	</head>
+	
+	<body>
+		<div id="map" style="width: 1452px; height: 768px;"></div>
+		<div class='space-bottom'></div>
+    
+		<div id="rose"></div>
+	
+			
+		<script>
+	
+		var osm = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
+		{attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors,<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>', 
+		id: 'mapbox.satellite', 
+		accessToken:'pk.eyJ1IjoiY2FyYmFyYWgiLCJhIjoiY2swNXR1cTduMDN4NjNvcHh5eDUxc2dlYiJ9.9bVcwW-rAuEbuHpOAPEjrA',
+		maxZoom: 20,
+		minZoom: 6,
+		keyboard: true
+		})
+		
+		var osmc = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
+		{attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors,<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>', 
+		id: 'mapbox.comic', 
+		accessToken:'pk.eyJ1IjoiY2FyYmFyYWgiLCJhIjoiY2swNXR1cTduMDN4NjNvcHh5eDUxc2dlYiJ9.9bVcwW-rAuEbuHpOAPEjrA',
+		maxZoom: 20,
+		minZoom: 6,
+		keyboard: true
+		})
+		
+		var osm2 = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', 
+		{attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors,<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>', 
+		id: 'mapbox.pencil', 
+		accessToken:'pk.eyJ1IjoiY2FyYmFyYWgiLCJhIjoiY2swNXR1cTduMDN4NjNvcHh5eDUxc2dlYiJ9.9bVcwW-rAuEbuHpOAPEjrA',
+		maxZoom: 20,
+		minZoom: 4,
+		keyboard: true
+		
+		});
+		
+		var ESRI = L.esri.basemapLayer('ImageryFirefly');
+		
+		var ESRI_topo = L.esri.basemapLayer('Topographic');
+		
+		var ESRI_streets = L.esri.basemapLayer('Streets');
+		
+		var mapa = L.map('map',{
+		center: [13.934126, -87.294580],
+		zoom:12,
+		layers: osmc,
+		zoomControl: false,
+		fullscreenControl: {pseudoFullscreen: true, position: 'topleft'
+		},
+		maxBounds: [[12.5, -90.0],[17.0, -82.5]]
+		});
+		
+		var plazacentral = L.marker([13.934126, -87.294580]);
+		mapa.addLayer(plazacentral);
+		plazacentral.bindPopup("San Juan de Ojojona, Plaza Central");
+		
+		var plazacentral = L.marker([13.930876, -87.271566]);
+		mapa.addLayer(plazacentral);
+		plazacentral.bindPopup("Pueblo de Santa Ana");
+		
+		<!--Marcadores de L.icon, tomados de: https://labs.mapbox.com/maki-icons/ -->
+		var icono1 = L.icon({
+		iconUrl: 'place-of-worship-15.png',
+		iconSize: [20, 20],
+		});
+		var marker1= L.marker([13.934222, -87.294289], {icon: icono1}).addTo(mapa);
+		marker1.bindPopup("Iglesia Católica, San Juan de Ojojona");
+				
+		var icono2 = L.icon({
+		iconUrl: 'soccer-15.png',
+		iconSize: [20, 20],
+		});
+		var marker2= L.marker([13.937626, -87.296545], {icon: icono2}).addTo(mapa);
+		marker2.bindPopup("Area deportiva");
+		
+		var icono3 = L.icon({
+		iconUrl: 'place-of-worship-15.png',
+		iconSize: [20, 20],
+		});
+		var marker3= L.marker([13.930876, -87.271566], {icon: icono3}).addTo(mapa);
+		marker3.bindPopup("Pueblo Santa Anan");
+		
+		var icono4 = L.icon({
+		iconUrl: 'industry-15.png',
+		iconSize: [30, 30],
+		});
+		var marker3= L.marker([13.932733, -87.324598], {icon: icono4}).addTo(mapa);
+		marker3.bindPopup("Industria Local");
+		
+		var icono4 = L.icon({
+		iconUrl: 'dam-15.png',
+		iconSize: [20, 20],
+		});
+		var marker3= L.marker([13.990294, -87.261762], {icon: icono4}).addTo(mapa);
+		marker3.bindPopup("Embalse La Concepcion");
+		
+		<!--Leaflet.MakiMarkers-->
+		L.MakiMarkers.accessToken = "pk.eyJ1IjoiY2FyYmFyYWgiLCJhIjoiY2swNXR1cTduMDN4NjNvcHh5eDUxc2dlYiJ9.9bVcwW-rAuEbuHpOAPEjrA";
+		
+		var icon1= L.MakiMarkers.icon ({icon:"wetland", color: "#a4c639", size:"m"}); 
+		var laguna = L.marker([13.938507, -87.290476],{icon:icon1}).addTo(mapa);
+		laguna.bindPopup("Laguna de oxidacion");
+				
+		var icon2= L.MakiMarkers.icon ({icon:"gift", color: "#cd9575", size:"m"}); 
+		var suvenir = L.marker([13.933020, -87.291770],{icon:icon2}).addTo(mapa);
+		suvenir.bindPopup("Artesania local");
+				
+		var ico3= L.MakiMarkers.icon ({icon:"religious-christian", color: "#000000", size:"m"}); 
+		var cementerio = L.marker([13.939516, -87.295505],{icon:ico3}).addTo(mapa);
+		cementerio.bindPopup("San Juan de Ojojona, Cementerio General");
+		
+		var icon4= L.MakiMarkers.icon ({icon:"religious-christian", color: "#36454f", size:"s"});
+		var sacg = L.marker([13.928177, -87.273908],{icon:icon4}).addTo(mapa);
+		sacg.bindPopup("Santa Ana, Cementerio General");
+				
+		<!--Leaflet Data Visualization Framework (DVF) Custom Markers-->
+		var mark1 = new L.MapMarker([14.105774, -87.204784], {
+		radius: 20,
+		fillOpacity:0.5,
+		fillColor:'none',
+		color:'red',
+		innerRadius:6,
+		numberOfSides:4,
+		rotation:10,   
+		});
+
+		mapa.addLayer(mark1);
+		mark1.bindPopup("Tegucigalpa, uno de los peores lugares del mundo");
+		
+		var honduras = new L.geoJson(honduras, {'color':"green", 'weight':2.0, 'fill': false}).addTo(mapa);
+		var ah = new L.geoJson(ah, {'dashArray':12, 'color':"#FF00FF", 'weight':1.0, 'fill': false});
+		var aldeas = new L.geoJson(aldeas, {'dashArray':12, 'color':"black", 'weight':1.0, 'fill': false});
+		var campos = new L.geoJson(campos, {'dashArray':12, 'color':"#808b96", 'weight':1.0, 'fill': false});
+		var catstr = new L.geoJson(catstr, {'color':"red", 'weight':1.0, 'fill': false});
+		var salud = new L.geoJson(salud, {'dashArray':12, 'color':"red", 'weight':1.0, 'fill': false});
+		var curvas = new L.geoJson(curvas, {'dashArray':1, 'color':"#d35400", 'weight':1.0, 'fill': false});
+		var eco = new L.geoJson(eco, {'dashArray':12, 'color':"#abebc6", 'weight':1.0, 'fill': false});
+		var geo = new L.geoJson(geo, {'dashArray':12, 'color':"#e67e22", 'weight':1.0, 'fill': false});
+		var limites = new L.geoJson(limites, {'dashArray':3, 'color':"yellow", 'weight':2.0, 'fill': false}).addTo(mapa);
+		var rios = new L.geoJson(rios, {'color':"#3498db", 'weight':1.0, 'fill': false});
+		var agro = new L.geoJson(agro, {'color':"#239b56", 'weight':1.0, 'fill': false});		
+		
+		var imageBounds = [[13.933951, -87.294680],[13.934119, -87.294457]];
+		var me = L.imageOverlay("me.png",
+			imageBounds, {opacity: 1});
+		var hola = L.layerGroup([me, agro]);
+		
+		var capasBase = {
+			"Streets-satellite de MapBox": osm,
+			"Estilo 'Comic'": osmc,
+			"Esri - Streets": ESRI_topo,
+			"Esri - Imagery": ESRI,
+			"Esri - Topografico": ESRI_topo,
+			};
+		
+		var capasOverlay = {
+			
+			"Asentamientos Humanos": ah,
+			"Campos de futbol": campos,
+			"Catastro": catstr,
+			"Centros de Salud": salud,
+			"Curvas de nivel @ 100": curvas,
+			"Aldeas de Ojojona": aldeas,
+			"Ecosistemas de Ojojona": eco,
+			"Geologia de Ojojona": geo,
+			"Limites municipales": limites,
+			"Rios de Ojojona": rios,
+			"Zonas de desarrollo agricola": agro,
+			"Zonas de desarrollo agricola": hola,
+			};
+		
+		var rose = L.control.rose('rose', {position:'bottomleft', icon:'nautical', iSize:'medium', opacity:0.8});
+			rose.addTo(mapa)
+		
+		var c = new L.Control.Coordinates();
+		c.addTo(mapa);
+
+		mapa.on('click', function(e) {
+		c.setCoordinates(e);
+		});
+
+		var title = L.control();
+		title.onAdd = function (map) {
+		var div = L.DomUtil.create('div', 'info');
+		div.innerHTML +='<h2>Geovisor para San Juan de Ojojona</h2>Información geografica con capas basicas';
+		return div;
+		};
+		title.addTo(mapa);
+		
+		// Creates a red marker with the coffee icon
+			var redMarker = L.AwesomeMarkers.icon({
+			icon: 'coffee',
+			markerColor: 'red'
+			});
+      
+		L.marker([13.933577, -87.293802], {icon: redMarker}).addTo(mapa);
+		
+		new L.control.layers(capasBase, capasOverlay,{collapsed:true}).addTo(mapa);
+		
+		new L.Control.Zoom({ position: 'topright'}).addTo(mapa);
+		
+		var miniMap = new L.Control.MiniMap(osm2,{ toggleDisplay: true, position: 'bottomright' }).addTo(mapa);
+		var MousePosition = new L.control.mousePosition(osm).addTo(mapa);
+		var escala = L.control.scale().addTo(mapa);
+		var viewCenter = new L.Control.ViewCenter(mapa);
+			mapa.addControl(viewCenter);
+		
+	</script>
+	
+	</body>
+	<p><i><strong><font size="4", color="blue">Carlos Luis Barahona Andino</font></strong></i></P>
+</html>
