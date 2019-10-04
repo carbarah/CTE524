@@ -71,6 +71,12 @@
 		<!--MakiMarkers-->
 		<script src="Leaflet.MakiMarkers.js"></script>
 		
+		
+		<!--Measure Tool-->
+		<link rel="stylesheet" href="leaflet-measure.css">
+		<script src="leaflet.measurecontrol.js"></script>
+		<script src="leaflet-measure.min.js"></script>
+		
 		<!--Otros marcadores que no logre -->
 		<link rel="stylesheet" href="http://code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css">
 		<link rel="stylesheet" href="leaflet.awesome-markers.css">
@@ -252,7 +258,7 @@
 		
 		var honduras = new L.geoJson(honduras, {'color':"green", 'weight':2.0, 'fill': false}).addTo(mapa);
 		var ah = new L.geoJson(ah, {'dashArray':12, 'color':"#FF00FF", 'weight':1.0, 'fill': false});
-		var aldeas = new L.geoJson(aldeas, {'dashArray':12, 'color':"#FF8C00", 'weight':2.0, 'fill': false});
+		var aldeas = new L.geoJson(aldeas, {'dashArray':12, 'color':"black", 'weight':1.0, 'fill': false});
 		var campos = new L.geoJson(campos, {'dashArray':12, 'color':"#808b96", 'weight':1.0, 'fill': false});
 		var catstr = new L.geoJson(catstr, {'color':"red", 'weight':1.0, 'fill': false});
 		var salud = new L.geoJson(salud, {'dashArray':12, 'color':"red", 'weight':1.0, 'fill': false});
@@ -317,6 +323,19 @@
 			});
       
 		L.marker([13.933577, -87.293802], {icon: redMarker}).addTo(mapa);
+		
+		var measureControl = new L.control.measure({
+		primaryLengthUnit: 'kilometers',
+		secondaryLengthUnit: 'meters',
+		primaryAreaUnit: 'hectares',
+		secondaryAreaUnit: 'sqmeters',
+		activeColor: '#de2d26',
+		completedColor: '#de2d26',
+		popupOptions: { className: 'leaflet-measure-resultpopup', autoPanPadding: [10, 10] }		
+		
+		});
+		measureControl.addTo(mapa);
+		
 		
 		new L.control.layers(capasBase, capasOverlay,{collapsed:true}).addTo(mapa);
 		
